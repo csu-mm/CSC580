@@ -45,6 +45,7 @@ import keras_tuner as kt
 from keras.models import Sequential
 from keras import layers 
 from keras import activations
+import argparse
 
 
 
@@ -270,25 +271,36 @@ def predict(model, scaler):
 
 # Application execution main entry point.
 if __name__ == "__main__":
-    clearScreen()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--hyper", help="if this flag exists, hyperparemters will be applied. Otherwise plain model", action="store_true")
+    args = parser.parse_args()
+    
+    #clearScreen()
     print("Course: CSC580 - Applying Machine Learning and Neural Networks - Capstone")
     print("Module 2: Critical Thinking Assignment")
     print("  Option 2: Predicting Future Sales\n")
+
+    if args.hyper:
+        print("------  Hyper Parameter Tuning : Applied  ------\n")
+    else:
+        print("------  Hyper Parameter Tuning : Not Applied  ------\n")
 
     scaler = prepareData()
 
     X_train, Y_train = load_training_data()
 
+    """   # this portion not needed now because 'hyper tuning' option selection passed to command line. 
     usrPrompt: str = "Do you want to use: 'Hyper Parameter Tuning'? y(yes), n(no) or 'q' to quit: "
-    usrInput: str = "x"
+    usrInput: str = "n"    
     okInputs = ['y','n','q']
     while usrInput not in okInputs:
         print("\n")
         usrInput = input(usrPrompt).strip().lower()
     if usrInput == 'q':
-        exit(0)    
+        exit(0)     
+    """
 
-    if usrInput == 'y':  # Run with hyperparetmer tuning steps        
+    if args.hyper:   # usrInput == 'y':  # Run with hyperparetmer tuning steps
         tuned_model = tune_hyperparameters(X_train, Y_train, verbose=1)
         trained_model = train_model(X_train, Y_train, tuned_model, "trained_tuned_model", verbose=2, validation_split=0)
     else: # Run without tuning
