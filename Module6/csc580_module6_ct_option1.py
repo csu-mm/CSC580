@@ -82,6 +82,38 @@ def createModel1():
     ])
 
 
+# Model with improved veracity
+def createModel3():
+    return tf.keras.models.Sequential([
+        # Block 1
+        tf.keras.layers.Conv2D(32, 3, padding='same', use_bias=False),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+        tf.keras.layers.Conv2D(32, 3, padding='same', use_bias=False),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+        tf.keras.layers.MaxPooling2D(2),
+
+        # Block 2
+        tf.keras.layers.SeparableConv2D(64, 3, padding='same', use_bias=False),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+        tf.keras.layers.SeparableConv2D(64, 3, padding='same', use_bias=False),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.ReLU(),
+        tf.keras.layers.MaxPooling2D(2),
+
+        # Global pooling instead of Flatten
+        tf.keras.layers.GlobalAveragePooling2D(),
+
+        # Modern classifier head
+        tf.keras.layers.Dense(128, activation='relu', 
+                            kernel_regularizer=tf.keras.regularizers.l2(1e-4)),
+                            tf.keras.layers.Dropout(0.3),
+                            tf.keras.layers.Dense(10, activation='softmax')
+    ])
+
+
 # This function creates a Sequential CNN model with 3 layers.
 # This model has more layers and offers little better accuray, 
 #    but I've noticed that it takes almost twice execution time compared to the above model.
@@ -177,8 +209,9 @@ if __name__ == "__main__":
     x_train_normalized, y_train, x_test_normalized, y_test = load_CIFAR_data_and_Prepare(normalizationFactor)
 
     # Build a CNN model
-    model = createModel1()
+    #model = createModel1()
     #model = createModel2()
+    model = createModel3()
     model.summary()  # show model summary
 
     # Compile the model
